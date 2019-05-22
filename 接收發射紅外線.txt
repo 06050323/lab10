@@ -1,0 +1,32 @@
+#include <IRremote.h>
+
+int RECV_PIN = 11;
+int buttonpin=4;
+int buttonState =0;
+IRsend irsend;
+IRrecv irrecv(RECV_PIN);
+decode_results results;
+void setup()
+{
+  pinMode(buttonpin,INPUT);
+  Serial.begin(9600);
+
+  Serial.println("Enabling IRin");
+  irrecv.enableIRIn(); 
+  Serial.println("Enabled IRin");
+}
+
+void loop() {
+  buttonState =digitalRead(buttonpin);
+  if(buttonState==HIGH)
+  {
+    irsend.sendNEC(0x06050323,32);
+    Serial.println("Send");
+  }
+  if (irrecv.decode(&results)) {
+    irsend.sendNEC(0x06050323,32);
+    Serial.println(results.value, HEX);
+    irrecv.resume(); 
+  }
+  delay(100);
+}
